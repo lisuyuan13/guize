@@ -1,4 +1,3 @@
-# Abema TV
 abematv.akamaized.net
 ds-linear-abematv.akamaized.net
 ds-vod-abematv.akamaized.net
@@ -20,8 +19,6 @@ vod-abematv.akamaized.net
 +.hayabusa.io
 +.hayabusa.media
 +.abematv.co.jp
-
-# DMM
 api-p.videomarket.jp
 +.dmm.com
 +.dmm-extension.com
@@ -39,17 +36,11 @@ api-p.videomarket.jp
 +.microad.co.jp
 +.microad.jp
 +.socdm.com
-
-# mgstage (DMM 旗下成人内容平台)
 +.mgstage.com
 +.mgstage.co.jp
 +.mgstage.jp
 +.mgcdn.jp
 +.mgstage-dmm.com
-
-
-
-# prestige-av (成人内容厂商)
 +.prestige-av.com
 +.prestige-av.jp
 +.prestige-av.co.jp
