@@ -1,7 +1,8 @@
 payload:
-  - PROCESS-NAME,yahoo.co.jp
-  - PROCESS-NAME,video.dmm.co.jp
-  - PROCESS-NAME,dmm
-  - PROCESS-NAME,abema
-  - PROCESS-NAME,prestige-av
-  - PROCESS-NAME,misskey
+  - DOMAIN-KEYWORD,yahoo.co.jp
+  - DOMAIN-KEYWORD,dmm.co.jp
+  - DOMAIN-KEYWORD,dmm
+  - DOMAIN-KEYWORD,abema
+  - DOMAIN-KEYWORD,prestige-av
+  - DOMAIN-KEYWORD,misskey
+  - DOMAIN-SUFFIX,dmm.co.jp 
