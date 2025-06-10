@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_keyword": [
+        "yahoo.co.jp",
+        "dmm",
+        "prestige-av",
+        "misskey",
+        "dmm.co.jp"
+      ]
+    }
+  ]
+}
