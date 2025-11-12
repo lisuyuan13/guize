@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "rules": [
+    {"domain_keyword": ["yahoo.co.jp"]},
+    {"domain_keyword": ["video.dmm.co.jp"]},
+    {"domain_keyword": ["dmm"]},
+    {"domain_suffix": ["dmm.co.jp"]},
+    {"domain_keyword": ["abema"]},
+    {"domain_keyword": ["prestige-av"]},
+    {"domain_keyword": ["mgstage"]},
+    {"domain_keyword": ["misskey"]},
+    {"domain_keyword": ["sokmil"]},
+    {"domain_keyword": ["candl.jp"]},
+    {"domain_keyword": ["duga.jp"]}
+  ]
+}
