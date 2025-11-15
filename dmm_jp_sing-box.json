@@ -2,6 +2,7 @@
   "version": 1,
   "rules": [
     {"domain_keyword": ["yahoo.co.jp"]},
+    {"domain_keyword": ["fiu758"]},
     {"domain_keyword": ["video.dmm.co.jp"]},
     {"domain_keyword": ["dmm"]},
     {"domain_suffix": ["dmm.co.jp"]},
