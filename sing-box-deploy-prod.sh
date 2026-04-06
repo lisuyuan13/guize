@@ -93,6 +93,24 @@ EOF
   fi
 }
 
+use_aliyun_armbian_mirror() {
+  local file="/etc/apt/sources.list.d/armbian.sources"
+  local changed=0
+
+  if [[ -f "$file" ]]; then
+    if ! grep -q 'mirrors.aliyun.com/armbian' "$file"; then
+      log "将 Armbian 软件源切换到阿里云镜像"
+      cp -a "$file" "${file}.bak.$(date +%s)"
+      sed -Ei 's@https?://(apt\.armbian\.com|mirrors\.tuna\.tsinghua\.edu\.cn/armbian)@https://mirrors.aliyun.com/armbian@g' "$file"
+      changed=1
+    fi
+  fi
+
+  if [[ $changed -eq 1 ]]; then
+    log "已切换 Armbian 软件源到阿里云镜像"
+  fi
+}
+
 install_base_packages() {
   export DEBIAN_FRONTEND=noninteractive
   local pkgs=(ca-certificates iproute2 nftables curl unzip procps systemd)
@@ -103,8 +121,9 @@ install_base_packages() {
   if [[ ${#missing[@]} -gt 0 ]]; then
     disable_cdrom_sources
     use_volc_debian_mirror
+    use_aliyun_armbian_mirror
     log "安装依赖: ${missing[*]}"
-    log "正在更新 APT 软件包索引（已优先切换到火山主镜像）"
+    log "正在更新 APT 软件包索引（Debian/Ubuntu 主源：火山；Armbian 源：阿里云）"
     apt-get update -o Acquire::Retries=3
     apt-get install -y "${missing[@]}"
   fi
