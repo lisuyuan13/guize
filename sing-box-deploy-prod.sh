@@ -250,6 +250,12 @@ set_binary_urls() {
 download_binary() {
   local tmp_file url
   tmp_file="$BINARY.tmp"
+
+  if [[ -x "$BINARY" ]]; then
+    log "检测到已有核心文件，跳过下载: $BINARY"
+    return 0
+  fi
+
   rm -f "$tmp_file"
 
   for url in "${BINARY_URLS[@]}"; do
