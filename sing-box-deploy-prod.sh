@@ -12,8 +12,8 @@ SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 ARCH=""
 BINARY_URLS=()
 UI_URLS=(
-  "https://mirror.ghproxy.com/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
-  "https://ghproxy.net/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
+  "https://hk.gh-proxy.org/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
+  "https://hk.gh-proxy.org/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
   "https://github.moeyy.xyz/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
   "https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
 )
@@ -227,17 +227,17 @@ set_binary_urls() {
   case "$ARCH" in
     amd64)
       BINARY_URLS=(
-        "https://gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
-        "https://ghproxy.net/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
-        "https://github.moeyy.xyz/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
+        "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
+        "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
+        "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
         "https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
       )
       ;;
     arm64)
       BINARY_URLS=(
-        "https://gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
-        "https://ghproxy.net/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
-        "https://github.moeyy.xyz/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
+        "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
+        "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
+        "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
         "https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
       )
       ;;
