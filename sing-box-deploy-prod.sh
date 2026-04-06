@@ -5,11 +5,18 @@ WORKDIR="/opt/sing-box"
 BINARY="$WORKDIR/sing-box"
 CONFIG="$WORKDIR/sing-box链式代理测试.json"
 LOGDIR="$WORKDIR/logs"
+UI_DIR="$WORKDIR/ui"
 SERVICE_NAME="sing-box"
 SYSCTL_FILE="/etc/sysctl.d/98-sing-box-router.conf"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 ARCH=""
 BINARY_URLS=()
+UI_URLS=(
+  "https://mirror.ghproxy.com/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
+  "https://ghproxy.net/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
+  "https://github.moeyy.xyz/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
+  "https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
+)
 
 log() {
   echo "[$(date '+%F %T')] $*"
@@ -53,25 +60,43 @@ disable_cdrom_sources() {
 }
 
 use_volc_debian_mirror() {
-  local changed=0
+  local changed=0 codename distro_id
+  codename="$(. /etc/os-release && echo "${VERSION_CODENAME:-}")"
+  distro_id="$(. /etc/os-release && echo "${ID:-}")"
 
   if [[ -f /etc/apt/sources.list.d/debian.sources ]]; then
     if ! grep -q 'mirrors.volces.com/debian' /etc/apt/sources.list.d/debian.sources; then
       log "将 Debian/Ubuntu 主软件源切换到火山镜像"
       cp -a /etc/apt/sources.list.d/debian.sources "/etc/apt/sources.list.d/debian.sources.bak.$(date +%s)"
-      cat > /etc/apt/sources.list.d/debian.sources <<'EOF'
+      if [[ "$distro_id" == "ubuntu" ]]; then
+        cat > /etc/apt/sources.list.d/debian.sources <<EOF
+Types: deb
+URIs: https://mirrors.volces.com/ubuntu/
+Suites: ${codename} ${codename}-updates ${codename}-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+Types: deb
+URIs: https://mirrors.volces.com/ubuntu/
+Suites: ${codename}-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+EOF
+      else
+        cat > /etc/apt/sources.list.d/debian.sources <<EOF
 Types: deb
 URIs: https://mirrors.volces.com/debian/
-Suites: trixie trixie-updates trixie-backports
+Suites: ${codename} ${codename}-updates ${codename}-backports
 Components: main contrib non-free non-free-firmware
 Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 
 Types: deb
 URIs: https://mirrors.volces.com/debian-security/
-Suites: trixie-security
+Suites: ${codename}-security
 Components: main contrib non-free non-free-firmware
 Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 EOF
+      fi
       changed=1
     fi
   elif [[ -f /etc/apt/sources.list ]]; then
@@ -85,7 +110,59 @@ EOF
         -e 's@https?://security\.ubuntu\.com/ubuntu/?@https://mirrors.volces.com/ubuntu/@g' \
         /etc/apt/sources.list
       changed=1
+    elif ! grep -Eq '^[[:space:]]*deb[[:space:]]+https?://' /etc/apt/sources.list; then
+      log "检测到系统没有可用在线 APT 源，自动创建火山镜像源"
+      cp -a /etc/apt/sources.list "/etc/apt/sources.list.bak.$(date +%s)"
+      if [[ "$distro_id" == "ubuntu" ]]; then
+        cat > /etc/apt/sources.list <<EOF
+deb https://mirrors.volces.com/ubuntu/ ${codename} main restricted universe multiverse
+deb https://mirrors.volces.com/ubuntu/ ${codename}-updates main restricted universe multiverse
+deb https://mirrors.volces.com/ubuntu/ ${codename}-backports main restricted universe multiverse
+deb https://mirrors.volces.com/ubuntu/ ${codename}-security main restricted universe multiverse
+EOF
+      else
+        cat > /etc/apt/sources.list <<EOF
+deb https://mirrors.volces.com/debian/ ${codename} main contrib non-free non-free-firmware
+deb https://mirrors.volces.com/debian/ ${codename}-updates main contrib non-free non-free-firmware
+deb https://mirrors.volces.com/debian/ ${codename}-backports main contrib non-free non-free-firmware
+deb https://mirrors.volces.com/debian-security/ ${codename}-security main contrib non-free non-free-firmware
+EOF
+      fi
+      changed=1
     fi
+  else
+    log "检测到系统没有 sources.list / debian.sources，自动创建火山镜像源"
+    mkdir -p /etc/apt/sources.list.d
+    if [[ "$distro_id" == "ubuntu" ]]; then
+      cat > /etc/apt/sources.list.d/debian.sources <<EOF
+Types: deb
+URIs: https://mirrors.volces.com/ubuntu/
+Suites: ${codename} ${codename}-updates ${codename}-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+Types: deb
+URIs: https://mirrors.volces.com/ubuntu/
+Suites: ${codename}-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+EOF
+    else
+      cat > /etc/apt/sources.list.d/debian.sources <<EOF
+Types: deb
+URIs: https://mirrors.volces.com/debian/
+Suites: ${codename} ${codename}-updates ${codename}-backports
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+Types: deb
+URIs: https://mirrors.volces.com/debian-security/
+Suites: ${codename}-security
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+EOF
+    fi
+    changed=1
   fi
 
   if [[ $changed -eq 1 ]]; then
@@ -192,15 +269,76 @@ download_binary() {
   fail "所有核心下载源都失败了"
 }
 
+download_ui() {
+  local tmp_zip tmp_dir url success=0
+  tmp_zip="$WORKDIR/ui.zip"
+  tmp_dir="$WORKDIR/ui.tmp"
+
+  mkdir -p "$UI_DIR"
+  rm -f "$tmp_zip"
+  rm -rf "$tmp_dir"
+
+  # 如果 UI 已经存在 index.html，则跳过重复下载
+  if [[ -f "$UI_DIR/index.html" ]]; then
+    log "检测到 UI 已存在，跳过下载"
+    return 0
+  fi
+
+  for url in "${UI_URLS[@]}"; do
+    log "尝试下载面板 UI: $url"
+    if curl -fL --connect-timeout 15 --max-time 300 --retry 2 "$url" -o "$tmp_zip"; then
+      if [[ -s "$tmp_zip" ]]; then
+        mkdir -p "$tmp_dir"
+        if unzip -oq "$tmp_zip" -d "$tmp_dir"; then
+          rm -rf "$UI_DIR"
+          mkdir -p "$UI_DIR"
+
+          if [[ -f "$tmp_dir/index.html" ]]; then
+            cp -a "$tmp_dir"/. "$UI_DIR"/
+          elif [[ -d "$tmp_dir/dist" && -f "$tmp_dir/dist/index.html" ]]; then
+            cp -a "$tmp_dir/dist"/. "$UI_DIR"/
+          else
+            first_index=$(find "$tmp_dir" -mindepth 1 -maxdepth 3 -type f -name index.html | head -n1 || true)
+            if [[ -n "${first_index:-}" ]]; then
+              cp -a "$(dirname "$first_index")"/. "$UI_DIR"/
+            else
+              rm -rf "$UI_DIR"
+              rm -rf "$tmp_dir"
+              rm -f "$tmp_zip"
+              log "面板 UI 压缩包结构异常，尝试下一个源"
+              continue
+            fi
+          fi
+
+          rm -rf "$tmp_dir"
+          rm -f "$tmp_zip"
+          log "面板 UI 下载完成: $UI_DIR"
+          success=1
+          break
+        fi
+      fi
+    fi
+    rm -f "$tmp_zip"
+    rm -rf "$tmp_dir"
+    log "面板 UI 下载失败，尝试下一个源"
+  done
+
+  if [[ "$success" -ne 1 ]]; then
+    log "面板 UI 下载失败，保留空目录；服务仍可启动，但 /ui/ 可能不可用"
+    mkdir -p "$UI_DIR"
+  fi
+}
+
 prepare_files() {
   [[ -d "$WORKDIR" ]] || fail "$WORKDIR 不存在"
   [[ -f "$CONFIG" ]] || fail "缺少配置文件: $CONFIG"
 
-  mkdir -p "$LOGDIR" "$WORKDIR/ui"
+  mkdir -p "$LOGDIR" "$UI_DIR"
 
   detect_arch
   set_binary_urls
   download_binary
+  download_ui
 }
 
 get_default_iface() {
@@ -329,10 +467,9 @@ start_service() {
 update_config_github_urls() {
   [[ -f "$CONFIG" ]] || return 0
 
-  # 仅修正明确可控的 UI 下载地址，避免对现有规则集 URL 做全局替换，
-  # 否则容易把用户原本已经带代理前缀的链接拼坏，导致 404。
+  # UI 由脚本主动下载，配置里只保留本地目录，避免 sing-box 启动时再去远程下载失败。
   sed -i \
-    -e 's@https://github\.com/Zephyruso/zashboard/releases/latest/download/dist\.zip@https://mirror.ghproxy.com/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip@g' \
+    -e 's@"external_ui_download_url"[[:space:]]*:[[:space:]]*"[^"]*"@"external_ui_download_url": ""@g' \
     "$CONFIG"
 }
 
