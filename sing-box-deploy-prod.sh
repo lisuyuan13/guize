@@ -8,6 +8,8 @@ LOGDIR="$WORKDIR/logs"
 SERVICE_NAME="sing-box"
 SYSCTL_FILE="/etc/sysctl.d/98-sing-box-router.conf"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
+ARCH=""
+BINARY_URLS=()
 
 log() {
   echo "[$(date '+%F %T')] $*"
@@ -65,13 +67,78 @@ install_base_packages() {
   fi
 }
 
+detect_arch() {
+  local raw_arch
+  raw_arch=$(uname -m)
+  case "$raw_arch" in
+    x86_64|amd64)
+      ARCH="amd64"
+      ;;
+    aarch64|arm64)
+      ARCH="arm64"
+      ;;
+    *)
+      fail "不支持的系统架构: $raw_arch，目前仅支持 amd64 和 arm64"
+      ;;
+  esac
+  log "检测到系统架构: $raw_arch -> $ARCH"
+}
+
+set_binary_urls() {
+  case "$ARCH" in
+    amd64)
+      BINARY_URLS=(
+        "https://mirror.ghproxy.com/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
+        "https://ghproxy.net/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
+        "https://github.moeyy.xyz/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
+        "https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
+      )
+      ;;
+    arm64)
+      BINARY_URLS=(
+        "https://mirror.ghproxy.com/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
+        "https://ghproxy.net/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
+        "https://github.moeyy.xyz/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
+        "https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
+      )
+      ;;
+    *)
+      fail "未初始化架构下载地址"
+      ;;
+  esac
+}
+
+download_binary() {
+  local tmp_file url
+  tmp_file="$BINARY.tmp"
+  rm -f "$tmp_file"
+
+  for url in "${BINARY_URLS[@]}"; do
+    log "尝试下载 $ARCH 核心: $url"
+    if curl -fL --connect-timeout 15 --max-time 300 --retry 2 "$url" -o "$tmp_file"; then
+      if [[ -s "$tmp_file" ]]; then
+        mv -f "$tmp_file" "$BINARY"
+        chmod 755 "$BINARY"
+        log "核心下载完成: $BINARY"
+        return 0
+      fi
+    fi
+    rm -f "$tmp_file"
+    log "下载失败，尝试下一个源"
+  done
+
+  fail "所有核心下载源都失败了"
+}
+
 prepare_files() {
   [[ -d "$WORKDIR" ]] || fail "$WORKDIR 不存在"
-  [[ -f "$BINARY" ]] || fail "缺少二进制: $BINARY"
   [[ -f "$CONFIG" ]] || fail "缺少配置文件: $CONFIG"
 
-  chmod 755 "$BINARY"
   mkdir -p "$LOGDIR" "$WORKDIR/ui"
+
+  detect_arch
+  set_binary_urls
+  download_binary
 }
 
 get_default_iface() {
@@ -197,6 +264,15 @@ start_service() {
   systemctl --no-pager --full status "$SERVICE_NAME"
 }
 
+update_config_github_urls() {
+  [[ -f "$CONFIG" ]] || return 0
+
+  sed -i \
+    -e 's@https://github\.com/Zephyruso/zashboard/releases/latest/download/dist\.zip@https://mirror.ghproxy.com/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip@g' \
+    -e 's@https://raw\.githubusercontent\.com/@https://mirror.ghproxy.com/https://raw.githubusercontent.com/@g' \
+    "$CONFIG"
+}
+
 show_summary() {
   local iface="$1"
   local ip4 ip6
@@ -224,12 +300,13 @@ show_summary() {
 
 main() {
   require_root
+  install_base_packages
   prepare_files
   local iface
   iface=$(get_default_iface)
   check_ipv6_status "$iface"
-  install_base_packages
   configure_sysctl "$iface"
+  update_config_github_urls
   validate_config
   write_service
   start_service
