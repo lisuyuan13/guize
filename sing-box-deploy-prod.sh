@@ -52,6 +52,47 @@ disable_cdrom_sources() {
   fi
 }
 
+use_volc_debian_mirror() {
+  local changed=0
+
+  if [[ -f /etc/apt/sources.list.d/debian.sources ]]; then
+    if ! grep -q 'mirrors.volces.com/debian' /etc/apt/sources.list.d/debian.sources; then
+      log "将 Debian/Ubuntu 主软件源切换到火山镜像"
+      cp -a /etc/apt/sources.list.d/debian.sources "/etc/apt/sources.list.d/debian.sources.bak.$(date +%s)"
+      cat > /etc/apt/sources.list.d/debian.sources <<'EOF'
+Types: deb
+URIs: https://mirrors.volces.com/debian/
+Suites: trixie trixie-updates trixie-backports
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+Types: deb
+URIs: https://mirrors.volces.com/debian-security/
+Suites: trixie-security
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+EOF
+      changed=1
+    fi
+  elif [[ -f /etc/apt/sources.list ]]; then
+    if grep -Eq 'deb\s+https?://(deb\.debian\.org|security\.debian\.org|archive\.ubuntu\.com|security\.ubuntu\.com)/' /etc/apt/sources.list; then
+      log "将传统 /etc/apt/sources.list 主软件源切换到火山镜像"
+      cp -a /etc/apt/sources.list "/etc/apt/sources.list.bak.$(date +%s)"
+      sed -Ei \
+        -e 's@https?://deb\.debian\.org/debian@https://mirrors.volces.com/debian@g' \
+        -e 's@https?://security\.debian\.org/?@https://mirrors.volces.com/debian-security/@g' \
+        -e 's@https?://archive\.ubuntu\.com/ubuntu/?@https://mirrors.volces.com/ubuntu/@g' \
+        -e 's@https?://security\.ubuntu\.com/ubuntu/?@https://mirrors.volces.com/ubuntu/@g' \
+        /etc/apt/sources.list
+      changed=1
+    fi
+  fi
+
+  if [[ $changed -eq 1 ]]; then
+    log "已切换主软件源到火山镜像"
+  fi
+}
+
 install_base_packages() {
   export DEBIAN_FRONTEND=noninteractive
   local pkgs=(ca-certificates iproute2 nftables curl unzip procps systemd)
@@ -61,7 +102,9 @@ install_base_packages() {
   done
   if [[ ${#missing[@]} -gt 0 ]]; then
     disable_cdrom_sources
+    use_volc_debian_mirror
     log "安装依赖: ${missing[*]}"
+    log "正在更新 APT 软件包索引（已优先切换到火山主镜像）"
     apt-get update -o Acquire::Retries=3
     apt-get install -y "${missing[@]}"
   fi
@@ -267,9 +310,10 @@ start_service() {
 update_config_github_urls() {
   [[ -f "$CONFIG" ]] || return 0
 
+  # 仅修正明确可控的 UI 下载地址，避免对现有规则集 URL 做全局替换，
+  # 否则容易把用户原本已经带代理前缀的链接拼坏，导致 404。
   sed -i \
     -e 's@https://github\.com/Zephyruso/zashboard/releases/latest/download/dist\.zip@https://mirror.ghproxy.com/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip@g' \
-    -e 's@https://raw\.githubusercontent\.com/@https://mirror.ghproxy.com/https://raw.githubusercontent.com/@g' \
     "$CONFIG"
 }
 
