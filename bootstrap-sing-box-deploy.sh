@@ -27,8 +27,45 @@ require_root() {
   fi
 }
 
-need_cmd() {
-  command -v "$1" >/dev/null 2>&1 || fail "缺少命令: $1"
+disable_cdrom_sources() {
+  local changed=0
+
+  if [[ -f /etc/apt/sources.list ]] && grep -Eq '^[[:space:]]*deb[[:space:]]+cdrom:' /etc/apt/sources.list; then
+    log "检测到 cdrom APT 源，自动注释 /etc/apt/sources.list 中的相关条目"
+    cp -a /etc/apt/sources.list "/etc/apt/sources.list.bak.$(date +%s)"
+    sed -Ei 's@^[[:space:]]*(deb[[:space:]]+cdrom:.*)@# disabled by bootstrap-sing-box-deploy.sh: \1@g' /etc/apt/sources.list
+    changed=1
+  fi
+
+  if [[ -d /etc/apt/sources.list.d ]]; then
+    while IFS= read -r -d '' file; do
+      if grep -Eq '^[[:space:]]*deb[[:space:]]+cdrom:' "$file"; then
+        log "检测到 cdrom APT 源，自动注释 $file 中的相关条目"
+        cp -a "$file" "${file}.bak.$(date +%s)"
+        sed -Ei 's@^[[:space:]]*(deb[[:space:]]+cdrom:.*)@# disabled by bootstrap-sing-box-deploy.sh: \1@g' "$file"
+        changed=1
+      fi
+    done < <(find /etc/apt/sources.list.d -maxdepth 1 -type f -print0 2>/dev/null)
+  fi
+
+  if [[ $changed -eq 1 ]]; then
+    log "已处理 cdrom APT 源"
+  fi
+}
+
+ensure_basic_tools() {
+  local missing=()
+  command -v curl >/dev/null 2>&1 || missing+=(curl)
+  command -v sed >/dev/null 2>&1 || missing+=(sed)
+  command -v chmod >/dev/null 2>&1 || missing+=(coreutils)
+
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    disable_cdrom_sources
+    export DEBIAN_FRONTEND=noninteractive
+    log "安装基础工具: ${missing[*]}"
+    apt-get update -o Acquire::Retries=3
+    apt-get install -y "${missing[@]}"
+  fi
 }
 
 download_file() {
@@ -38,7 +75,7 @@ download_file() {
   local url
   for url in "${URLS[@]}"; do
     log "尝试下载: $url"
-    if curl -fsSL --connect-timeout 10 --max-time 120 "$url" -o "$TMP_FILE"; then
+    if curl -fsSL --connect-timeout 15 --max-time 180 "$url" -o "$TMP_FILE"; then
       if [[ -s "$TMP_FILE" ]]; then
         log "下载成功: $url"
         return 0
@@ -74,9 +111,7 @@ run_script() {
 
 main() {
   require_root
-  need_cmd curl
-  need_cmd sed
-  need_cmd chmod
+  ensure_basic_tools
   download_file
   fix_line_endings
   install_script
