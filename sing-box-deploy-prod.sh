@@ -12,8 +12,8 @@ SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 ARCH=""
 BINARY_URLS=()
 UI_URLS=(
-  "https://hk.gh-proxy.org/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
-  "https://hk.gh-proxy.org/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
+  "https://mirror.ghproxy.com/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
+  "https://ghproxy.net/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
   "https://github.moeyy.xyz/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
   "https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
 )
@@ -227,17 +227,17 @@ set_binary_urls() {
   case "$ARCH" in
     amd64)
       BINARY_URLS=(
-        "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
         "https://gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
-        "https://cdn.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
+        "https://ghproxy.net/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
+        "https://github.moeyy.xyz/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
         "https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
       )
       ;;
     arm64)
       BINARY_URLS=(
-        "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
         "https://gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
-        "https://cdn.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
+        "https://ghproxy.net/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
+        "https://github.moeyy.xyz/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
         "https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
       )
       ;;
@@ -481,9 +481,14 @@ update_config_github_urls() {
 
 show_summary() {
   local iface="$1"
-  local ip4 ip6
+  local ip4 ip6 controller api_port
   ip4=$(ip -4 -o addr show dev "$iface" | awk '{print $4}' | head -n1 | cut -d/ -f1)
   ip6=$(ip -6 -o addr show dev "$iface" scope global | awk '{print $4}' | head -n1 | cut -d/ -f1)
+  controller=$(grep -o '"external_controller"[[:space:]]*:[[:space:]]*"[^"]*"' "$CONFIG" 2>/dev/null | sed -E 's/.*"([^"]+)"$/\1/' | head -n1 || true)
+  api_port=$(printf '%s' "$controller" | sed -E 's@.*:([0-9]+)$@\1@' || true)
+  if [[ -z "${api_port:-}" || ! "$api_port" =~ ^[0-9]+$ ]]; then
+    api_port="9090"
+  fi
 
   echo
   echo "========== 部署完成 =========="
@@ -493,8 +498,8 @@ show_summary() {
   echo "服务: systemctl status $SERVICE_NAME"
   echo "配置: $CONFIG"
   echo "日志目录: $LOGDIR"
-  echo "面板地址: http://${ip4:-<本机IP>}:9090/ui/"
-  echo "API 地址: http://${ip4:-<本机IP>}:9090"
+  echo "面板地址: http://${ip4:-<本机IP>}:${api_port}/ui/"
+  echo "API 地址: http://${ip4:-<本机IP>}:${api_port}"
   echo "HTTP 代理: ${ip4:-<本机IP>}:8080"
   echo "SOCKS5 代理: ${ip4:-<本机IP>}:1080"
   echo "透明代理 redirect: ${ip4:-<本机IP>}:7890"
