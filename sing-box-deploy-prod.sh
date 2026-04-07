@@ -228,16 +228,16 @@ set_binary_urls() {
     amd64)
       BINARY_URLS=(
         "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
-        "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
-        "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
+        "https://gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
+        "https://cdn.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
         "https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-amd64-musl/sing-box"
       )
       ;;
     arm64)
       BINARY_URLS=(
         "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
-        "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
-        "https://hk.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
+        "https://gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
+        "https://cdn.gh-proxy.org/https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
         "https://github.com/lisuyuan13/guize/releases/download/sing-box-1.14.0-alpha.8-reF1nd-linux-arm64-musl/sing-box"
       )
       ;;
