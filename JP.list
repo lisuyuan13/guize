@@ -1,36 +1,46 @@
-DOMAIN-KEYWORD,yahoo.co.jp
-DOMAIN-KEYWORD,erodougazo.co.jp
-DOMAIN-KEYWORD,video.dmm.co.jp
+# ==================== 日本成人视频 & 成人游戏 规则 ====================
+
+# DOMAIN-KEYWORD（高命中率模糊匹配）
 DOMAIN-KEYWORD,dmm
-DOMAIN-SUFFIX,dmm.co.jp
-DOMAIN-KEYWORD,abema
+DOMAIN-KEYWORD,fanza
+DOMAIN-KEYWORD,erodougazo
 DOMAIN-KEYWORD,prestige-av
 DOMAIN-KEYWORD,mgstage
-DOMAIN-KEYWORD,misskey
-DOMAIN-KEYWORD,sokmil
-DOMAIN-KEYWORD,seesaawiki
-DOMAIN-KEYWORD,fiu758.com
 DOMAIN-KEYWORD,faleno
-DOMAIN-KEYWORD,erodougazo
+DOMAIN-KEYWORD,sod
 
-# ==================== 新增内容 ====================
-DOMAIN-SUFFIX,akatsukiworks.com
-DOMAIN-SUFFIX,ddo.jp
-DOMAIN-SUFFIX,navismithapis-cdn.com
-DOMAIN-SUFFIX,tenco.cc
-DOMAIN-SUFFIX,hibiki-site.com
-DOMAIN-SUFFIX,cosmiccute.com
-DOMAIN-SUFFIX,alicesoft.com
+# DOMAIN-SUFFIX（精确匹配）
+DOMAIN-SUFFIX,dmm.co.jp
 DOMAIN-SUFFIX,dmm.com
-DOMAIN-SUFFIX,akabeesoft2.com
-DOMAIN-SUFFIX,akabeesoft3.com
 DOMAIN-SUFFIX,dmm.hk
 DOMAIN-SUFFIX,dmmapis.com
+DOMAIN-SUFFIX,video.dmm.co.jp
+DOMAIN-SUFFIX,faleno.jp
+DOMAIN-SUFFIX,sod.co.jp
+DOMAIN-SUFFIX,prestige-av.com
+DOMAIN-SUFFIX,s1s1s1.com
+DOMAIN-SUFFIX,moodyz.com
+DOMAIN-SUFFIX,av-e-body.com
+DOMAIN-SUFFIX,ideapocket.com
+DOMAIN-SUFFIX,attackers.net
+DOMAIN-SUFFIX,madonna-av.com
+DOMAIN-SUFFIX,wanz-factory.com
+DOMAIN-SUFFIX,oppai-av.com
+DOMAIN-SUFFIX,kawaiikawaii.jp
+DOMAIN-SUFFIX,premium-beauty.com
+DOMAIN-SUFFIX,dasdas.jp
+DOMAIN-SUFFIX,muku.tv
+
+# 成人游戏厂商
+DOMAIN-SUFFIX,akatsukiworks.com
+DOMAIN-SUFFIX,alicesoft.com
+DOMAIN-SUFFIX,akabeesoft2.com
+DOMAIN-SUFFIX,akabeesoft3.com
+DOMAIN-SUFFIX,cosmiccute.com
 DOMAIN-SUFFIX,minori.ph
 DOMAIN-SUFFIX,wheel-soft.com
-DOMAIN-SUFFIX,api-p.videomarket.jp
-DOMAIN-SUFFIX,dmmrex.com
-DOMAIN-SUFFIX,dmm-extension.com
+DOMAIN-SUFFIX,hibiki-site.com
+DOMAIN-SUFFIX,tenco.cc
 
 IP-CIDR,203.104.209.7/32
 IP-CIDR,125.6.189.7/32
