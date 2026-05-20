@@ -1,6 +1,7 @@
-# ==================== 日本成人视频 & 成人游戏 规则 ====================
+# ==================== 日本成人视频 & 成人游戏 规则集 ====================
+# 包含 DMM/FANZA + 大量主流 & 小众 AV 厂商 + Galgame 厂商
 
-# DOMAIN-KEYWORD（高命中率模糊匹配）
+# ==================== DOMAIN-KEYWORD ====================
 DOMAIN-KEYWORD,dmm
 DOMAIN-KEYWORD,fanza
 DOMAIN-KEYWORD,erodougazo
@@ -8,15 +9,33 @@ DOMAIN-KEYWORD,prestige-av
 DOMAIN-KEYWORD,mgstage
 DOMAIN-KEYWORD,faleno
 DOMAIN-KEYWORD,sod
+DOMAIN-KEYWORD,abema
+DOMAIN-KEYWORD,misskey
+DOMAIN-KEYWORD,seesaawiki
+DOMAIN-KEYWORD,fiu758
+DOMAIN-KEYWORD,sokmil
+DOMAIN-KEYWORD,yahoo.co.jp
+DOMAIN-KEYWORD,hmp
+DOMAIN-KEYWORD,dogma
+DOMAIN-KEYWORD,mvg
+DOMAIN-KEYWORD,maxing
+DOMAIN-KEYWORD,zukkon
+DOMAIN-KEYWORD,karma
+DOMAIN-KEYWORD,hunter
+DOMAIN-KEYWORD,dandy
+DOMAIN-KEYWORD,naturalhigh
 
-# DOMAIN-SUFFIX（精确匹配）
+# ==================== DOMAIN-SUFFIX ====================
 DOMAIN-SUFFIX,dmm.co.jp
 DOMAIN-SUFFIX,dmm.com
 DOMAIN-SUFFIX,dmm.hk
 DOMAIN-SUFFIX,dmmapis.com
+DOMAIN-SUFFIX,dmmrex.com
+DOMAIN-SUFFIX,dmm-extension.com
 DOMAIN-SUFFIX,video.dmm.co.jp
-DOMAIN-SUFFIX,faleno.jp
-DOMAIN-SUFFIX,sod.co.jp
+DOMAIN-SUFFIX,api-p.videomarket.jp
+
+# 主流 AV 厂商
 DOMAIN-SUFFIX,prestige-av.com
 DOMAIN-SUFFIX,s1s1s1.com
 DOMAIN-SUFFIX,moodyz.com
@@ -24,14 +43,56 @@ DOMAIN-SUFFIX,av-e-body.com
 DOMAIN-SUFFIX,ideapocket.com
 DOMAIN-SUFFIX,attackers.net
 DOMAIN-SUFFIX,madonna-av.com
+DOMAIN-SUFFIX,faleno.jp
+DOMAIN-SUFFIX,sod.co.jp
 DOMAIN-SUFFIX,wanz-factory.com
 DOMAIN-SUFFIX,oppai-av.com
 DOMAIN-SUFFIX,kawaiikawaii.jp
 DOMAIN-SUFFIX,premium-beauty.com
 DOMAIN-SUFFIX,dasdas.jp
 DOMAIN-SUFFIX,muku.tv
+DOMAIN-SUFFIX,tameikegoro.jp
+DOMAIN-SUFFIX,fitch-av.com
+DOMAIN-SUFFIX,nagae-style.com
+DOMAIN-SUFFIX,gloryquest.tv
+DOMAIN-SUFFIX,rocket-inc.net
+DOMAIN-SUFFIX,mousouzoku-av.com
 
-# 成人游戏厂商
+# 小众 & 中坚 AV 厂商（大量补充）
+DOMAIN-SUFFIX,hmp.jp
+DOMAIN-SUFFIX,dogma.co.jp
+DOMAIN-SUFFIX,max-a.co.jp
+DOMAIN-SUFFIX,maxing.jp
+DOMAIN-SUFFIX,alice-japan.co.jp
+DOMAIN-SUFFIX,realworks.jp
+DOMAIN-SUFFIX,mvg.jp
+DOMAIN-SUFFIX,befree.co.jp
+DOMAIN-SUFFIX,janes.co.jp
+DOMAIN-SUFFIX,venus-av.com
+DOMAIN-SUFFIX,switch-film.com
+DOMAIN-SUFFIX,red-hot.tv
+DOMAIN-SUFFIX,karma-fetish.com
+DOMAIN-SUFFIX,finish.jp
+DOMAIN-SUFFIX,bonbon.tv
+DOMAIN-SUFFIX,emerald-video.com
+DOMAIN-SUFFIX,viper-av.com
+DOMAIN-SUFFIX,crysta.tv
+DOMAIN-SUFFIX,paradise.tv
+DOMAIN-SUFFIX,aura-pp.com
+DOMAIN-SUFFIX,arma-xxx.com
+DOMAIN-SUFFIX,atom-av.com
+DOMAIN-SUFFIX,hunter-av.com
+DOMAIN-SUFFIX,dandy-av.com
+DOMAIN-SUFFIX,naturalhigh.jp
+DOMAIN-SUFFIX,sadis.jp
+DOMAIN-SUFFIX,aukana.jp
+DOMAIN-SUFFIX,bibian-av.com
+DOMAIN-SUFFIX,km-produce.com
+DOMAIN-SUFFIX,hhh-av.com
+DOMAIN-SUFFIX,indies-av.co.jp
+DOMAIN-SUFFIX,manji-group.com
+
+# 成人游戏 / 同人厂商
 DOMAIN-SUFFIX,akatsukiworks.com
 DOMAIN-SUFFIX,alicesoft.com
 DOMAIN-SUFFIX,akabeesoft2.com
@@ -41,6 +102,9 @@ DOMAIN-SUFFIX,minori.ph
 DOMAIN-SUFFIX,wheel-soft.com
 DOMAIN-SUFFIX,hibiki-site.com
 DOMAIN-SUFFIX,tenco.cc
+DOMAIN-SUFFIX,ddo.jp
+DOMAIN-SUFFIX,navismithapis-cdn.com
 
+# ==================== IP-CIDR ====================
 IP-CIDR,203.104.209.7/32
 IP-CIDR,125.6.189.7/32
